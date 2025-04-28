@@ -1,16 +1,21 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TripGroupViewSet, PostViewSet, CommentViewSet, BadgeViewSet
-from django.conf import settings
-from django.conf.urls.static import static
+from . import views
+from . import ml_service  # Importa il modulo ml_service
 
 router = DefaultRouter()
-router.register(r'groups', TripGroupViewSet)
-router.register(r'posts', PostViewSet)
-router.register(r'comments', CommentViewSet)
-router.register(r'badges', BadgeViewSet)
+router.register(r'users', views.UserViewSet)
+router.register(r'trip-groups', views.TripGroupViewSet)
+router.register(r'group-memberships', views.GroupMembershipViewSet)
+router.register(r'diary-posts', views.DiaryPostViewSet)
+router.register(r'post-media', views.PostMediaViewSet)
+router.register(r'comments', views.CommentViewSet)
+router.register(r'badges', views.BadgeViewSet)
+router.register(r'user-badges', views.UserBadgeViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # Aggiungi l'endpoint per il servizio ML
+    path('ml-results/', ml_service.process_ml_results, name='process-ml-results'),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
