@@ -4,18 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Inizio Configurazione">
-      <change afterPath="$PROJECT_DIR$/todo/permissions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/backend-triptales.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/backend-triptales.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="struttura base backend, ml_service, urls, views, models, settings">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/ml_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/todo/ml_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/todo/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/todo/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/todo/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/todo/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/migrations/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/ml_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/ml_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/permissions.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/permissions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,12 +44,12 @@
     &quot;assignee&quot;: &quot;zaccaq&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/zaccaq/backend-triptales.git",
-    "accountId": "9b3c715d-dd72-4bd6-b7fd-5337a8afc067"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/zaccaq/backend-triptales.git&quot;,
+    &quot;accountId&quot;: &quot;9b3c715d-dd72-4bd6-b7fd-5337a8afc067&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -56,26 +58,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Django Server.backend-triptales.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Django Server.backend-triptales.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="backend-triptales" type="Python.DjangoServer" factoryName="Django server">
       <module name="backend-triptales" />
@@ -120,7 +122,8 @@
       <updated>1745830485947</updated>
       <workItem from="1745830487067" duration="3366000" />
       <workItem from="1745834734982" duration="2614000" />
-      <workItem from="1745869532552" duration="3183000" />
+      <workItem from="1745869532552" duration="3684000" />
+      <workItem from="1745952983961" duration="1530000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -138,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745834864227</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="struttura base backend, ml_service, urls, views, models, settings">
+      <option name="closed" value="true" />
+      <created>1745873674813</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1745873674813</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,6 +181,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Start backend-triptales" />
     <MESSAGE value="Inizio Configurazione" />
-    <option name="LAST_COMMIT_MESSAGE" value="Inizio Configurazione" />
+    <MESSAGE value="struttura base backend, ml_service, urls, views, models, settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="struttura base backend, ml_service, urls, views, models, settings" />
   </component>
 </project>

@@ -64,7 +64,7 @@ WSGI_APPLICATION = 'backend_triptales.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pwtriptales_db',
+        'NAME': 'triptales',
         'USER': 'root',  # Change to your MySQL user
         'PASSWORD': '',  # Change to your MySQL password
         'HOST': 'localhost',
@@ -73,7 +73,7 @@ DATABASES = {
 }
 
 # Auth user model
-AUTH_USER_MODEL = 'triptales.User'
+AUTH_USER_MODEL = 'triptales.Utente'
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

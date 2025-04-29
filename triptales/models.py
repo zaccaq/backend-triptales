@@ -18,7 +18,7 @@ class Gruppo(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     location = models.CharField(max_length=255)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_groups')
+    created_by = models.ForeignKey(Utente, on_delete=models.CASCADE, related_name='created_groups')
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

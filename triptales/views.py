@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class TripGroupViewSet(viewsets.ModelViewSet):
-    queryset = TripGroup.objects.all()
+    queryset = Gruppo.objects.all()
     serializer_class = TripGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter]
