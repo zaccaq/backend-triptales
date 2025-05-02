@@ -4,20 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="struttura base backend, ml_service, urls, views, models, settings">
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Risoluzione vari errori, eseguita la migration">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/migrations/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/ml_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/ml_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/permissions.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/permissions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +113,8 @@
       <workItem from="1745830487067" duration="3366000" />
       <workItem from="1745834734982" duration="2614000" />
       <workItem from="1745869532552" duration="3684000" />
-      <workItem from="1745952983961" duration="1530000" />
+      <workItem from="1745952983961" duration="2245000" />
+      <workItem from="1746173466537" duration="1984000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -149,7 +140,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745873674813</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Risoluzione vari errori, eseguita la migration">
+      <option name="closed" value="true" />
+      <created>1745956260079</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1745956260079</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,6 +181,7 @@
     <MESSAGE value="Start backend-triptales" />
     <MESSAGE value="Inizio Configurazione" />
     <MESSAGE value="struttura base backend, ml_service, urls, views, models, settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="struttura base backend, ml_service, urls, views, models, settings" />
+    <MESSAGE value="Risoluzione vari errori, eseguita la migration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Risoluzione vari errori, eseguita la migration" />
   </component>
 </project>

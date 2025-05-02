@@ -15,7 +15,13 @@ from .permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly, IsGroupAdmin
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Utente.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            # Permette a chiunque di registrarsi (nessuna autenticazione richiesta)
+            return [permissions.AllowAny()]
+        # Per tutte le altre azioni, richiede l'autenticazione
+        return [permissions.IsAuthenticated()]
 
     @action(detail=False, methods=['get'])
     def me(self, request):

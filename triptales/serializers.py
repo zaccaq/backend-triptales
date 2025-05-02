@@ -3,9 +3,25 @@ from .models import Utente, Gruppo, GroupMembership, DiaryPost, PostMedia, Comme
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = Utente
-        fields = ['id', 'username', 'email', 'profile_picture', 'registration_date']
+        fields = ['id', 'username', 'email', 'password', 'profile_picture', 'registration_date']
+
+    def create(self, validated_data):
+        user = Utente.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password']
+        )
+
+        # Se ci sono campi aggiuntivi da salvare
+        if 'profile_picture' in validated_data:
+            user.profile_picture = validated_data['profile_picture']
+
+        user.save()
+        return user
 
 
 class TripGroupSerializer(serializers.ModelSerializer):
