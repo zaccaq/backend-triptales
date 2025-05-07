@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status, filters
+from rest_framework import viewsets, permissions, status, filters, parsers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count
@@ -154,6 +154,63 @@ class TripGroupViewSet(viewsets.ModelViewSet):
         serializer = DiaryPostSerializer(posts, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def messages(self, request, pk=None):
+        """
+        Get all chat messages for a group
+        """
+        group = self.get_object()
+        # Verifica che l'utente faccia parte del gruppo
+        if not group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "You are not a member of this group."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Ottieni i messaggi di chat ordinati per data
+        messages = DiaryPost.objects.filter(
+            group=group,
+            is_chat_message=True
+        ).order_by('created_at')
+
+        serializer = DiaryPostSerializer(
+            messages,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def send_message(self, request, pk=None):
+        """
+        Send a chat message to a group
+        """
+        group = self.get_object()
+        # Verifica che l'utente faccia parte del gruppo
+        if not group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "You are not a member of this group."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        content = request.data.get('content', '')
+        if not content:
+            return Response(
+                {"detail": "Message content is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crea il messaggio
+        message = DiaryPost.objects.create(
+            group=group,
+            author=request.user,
+            title="Chat message",
+            content=content,
+            is_chat_message=True
+        )
+
+        serializer = DiaryPostSerializer(message, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
@@ -221,6 +278,61 @@ class PostMediaViewSet(viewsets.ModelViewSet):
     queryset = PostMedia.objects.all()
     serializer_class = PostMediaSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+
+    @action(detail=False, methods=['post'])
+    def upload_chat_image(self, request):
+        """
+        Upload an image for a chat message
+        """
+        group_id = request.data.get('group_id')
+        if not group_id:
+            return Response(
+                {"detail": "Group ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            group = Gruppo.objects.get(id=group_id)
+        except Gruppo.DoesNotExist:
+            return Response(
+                {"detail": "Group not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Verifica che l'utente faccia parte del gruppo
+        if not group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "You are not a member of this group."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Verifica che ci sia un'immagine
+        if 'media_file' not in request.FILES:
+            return Response(
+                {"detail": "No image file provided."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crea un post per il messaggio di chat
+        post = DiaryPost.objects.create(
+            group=group,
+            author=request.user,
+            title="Chat image",
+            content="",
+            is_chat_message=True
+        )
+
+        # Crea il media
+        media = PostMedia.objects.create(
+            post=post,
+            media_type='image',
+            media_url=request.FILES['media_file']
+        )
+
+        # Restituisci l'URL dell'immagine
+        serializer = PostMediaSerializer(media)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

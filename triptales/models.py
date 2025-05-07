@@ -52,6 +52,10 @@ class DiaryPost(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     location_name = models.CharField(max_length=255, null=True, blank=True)
+    is_chat_message = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['created_at']  # Ordina per data di creazione
 
     def __str__(self):
         return self.title

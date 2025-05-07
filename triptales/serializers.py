@@ -69,6 +69,7 @@ class PostMediaSerializer(serializers.ModelSerializer):
                   'detected_objects', 'ocr_text', 'caption', 'latitude', 'longitude']
 
 
+# triptales/serializers.py
 class DiaryPostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
@@ -80,7 +81,7 @@ class DiaryPostSerializer(serializers.ModelSerializer):
         model = DiaryPost
         fields = ['id', 'group', 'author', 'title', 'content', 'created_at',
                   'latitude', 'longitude', 'location_name', 'comments', 'media',
-                  'likes_count', 'user_has_liked']
+                  'likes_count', 'user_has_liked', 'is_chat_message']
 
     def get_likes_count(self, obj):
         return obj.likes.count()

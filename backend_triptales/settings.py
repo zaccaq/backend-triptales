@@ -26,8 +26,8 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'corsheaders',
-
-    # Local
+    #chat
+    'channels',
     'triptales',
 ]
 
@@ -146,5 +146,17 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # In production, specify the domains
+ASGI_APPLICATION = 'backend_triptales.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        # Per produzione, è meglio usare Redis:
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #     "hosts": [('127.0.0.1', 6379)],
+        # },
+    },
+}

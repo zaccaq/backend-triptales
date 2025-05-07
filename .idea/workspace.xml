@@ -4,10 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Gestione delle view register">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_30_04_2025_07_54__Changes_.xml" beforeDir="false" />
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Modifiche settings.py per il Login">
+      <change afterPath="$PROJECT_DIR$/triptales/consumer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/triptales/routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_triptales/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/asgi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +129,7 @@
       <workItem from="1745952983961" duration="1530000" />
       <workItem from="1746276818191" duration="3356000" />
       <workItem from="1746368239047" duration="5596000" />
-      <workItem from="1746522003481" duration="6446000" />
+      <workItem from="1746522003481" duration="8899000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -164,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746617893428</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Modifiche settings.py per il Login">
+      <option name="closed" value="true" />
+      <created>1746619862850</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1746619862851</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -199,6 +214,7 @@
     <MESSAGE value="struttura base backend, ml_service, urls, views, models, settings" />
     <MESSAGE value="Continuazione backend" />
     <MESSAGE value="Gestione delle view register" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gestione delle view register" />
+    <MESSAGE value="Modifiche settings.py per il Login" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modifiche settings.py per il Login" />
   </component>
 </project>
