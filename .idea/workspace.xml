@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="struttura base backend, ml_service, urls, views, models, settings">
-      <change beforePath="$PROJECT_DIR$/.idea/backend-triptales.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/backend-triptales.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Continuazione backend">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_04_2025_12_17__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,6 +119,7 @@
       <workItem from="1745952983961" duration="1530000" />
       <workItem from="1746276818191" duration="3356000" />
       <workItem from="1746368239047" duration="5596000" />
+      <workItem from="1746522003481" duration="5124000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -146,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745873674813</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Continuazione backend">
+      <option name="closed" value="true" />
+      <created>1746602495494</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746602495494</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +186,7 @@
     <MESSAGE value="Start backend-triptales" />
     <MESSAGE value="Inizio Configurazione" />
     <MESSAGE value="struttura base backend, ml_service, urls, views, models, settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="struttura base backend, ml_service, urls, views, models, settings" />
+    <MESSAGE value="Continuazione backend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Continuazione backend" />
   </component>
 </project>
