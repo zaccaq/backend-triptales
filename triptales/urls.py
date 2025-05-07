@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from . import ml_service  # Importa il modulo ml_service
+from . import ml_service
 
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -16,6 +16,5 @@ router.register(r'user-badges', views.UserBadgeViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # Aggiungi l'endpoint per il servizio ML
     path('ml-results/', ml_service.process_ml_results, name='process-ml-results'),
 ]

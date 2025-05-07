@@ -11,6 +11,46 @@ from .serializers import (UserSerializer, TripGroupSerializer, GroupMembershipSe
                           LikeSerializer, BadgeSerializer, UserBadgeSerializer)
 from .permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly, IsGroupAdmin
 
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+
+        if not all([username, email, password, first_name, last_name]):
+            return Response({"error": "Tutti i campi sono obbligatori."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Username già in uso."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email già registrata."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            user.save()
+
+            return Response({"message": "Registrazione avvenuta con successo."}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": f"Errore del server: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Utente.objects.all()
@@ -220,3 +260,38 @@ class UserBadgeViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Requirements not met for Explorer badge."},
                         status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+
+        if not all([username, email, password, first_name, last_name]):
+            return Response({"error": "Tutti i campi sono obbligatori."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Username già in uso."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email già registrata."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            user.save()
+
+            return Response({"message": "Registrazione avvenuta con successo."}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": f"Errore del server: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

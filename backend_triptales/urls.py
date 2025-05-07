@@ -7,7 +7,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from triptales.views import RegisterView
+
 urlpatterns = [
+    path('register/', RegisterView.as_view(), name='register'),
     path('admin/', admin.site.urls),
     path('api/', include('triptales.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
