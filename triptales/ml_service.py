@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
+from triptales.badge_service import BadgeService
+
 
 # Note: This is a placeholder service for ML Kit integration
 # In a real implementation, you would use Firebase ML Kit with Android
@@ -123,7 +125,7 @@ def process_ml_results(request):
         media.save()
 
         # Check for badge eligibility
-        check_badge_eligibility(request.user)
+        BadgeService.check_all_badges(request.user)
 
         return Response({
             "id": media.id,

@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Modifiche settings.py per il Login">
-      <change afterPath="$PROJECT_DIR$/triptales/consumer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/triptales/routing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Sviluppo servizio chat in tempo reale">
+      <change afterPath="$PROJECT_DIR$/triptales/badge_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/asgi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,31 +49,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Django Server.backend-triptales.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Django Server.backend-triptales.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="backend-triptales" type="Python.DjangoServer" factoryName="Django server">
       <module name="backend-triptales" />
@@ -129,7 +123,9 @@
       <workItem from="1745952983961" duration="1530000" />
       <workItem from="1746276818191" duration="3356000" />
       <workItem from="1746368239047" duration="5596000" />
-      <workItem from="1746522003481" duration="8899000" />
+      <workItem from="1746522003481" duration="10429000" />
+      <workItem from="1746625750193" duration="1981000" />
+      <workItem from="1746773723116" duration="3320000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -179,7 +175,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746619862851</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Sviluppo servizio chat in tempo reale">
+      <option name="closed" value="true" />
+      <created>1746622342058</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1746622342058</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,6 +219,7 @@
     <MESSAGE value="Continuazione backend" />
     <MESSAGE value="Gestione delle view register" />
     <MESSAGE value="Modifiche settings.py per il Login" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modifiche settings.py per il Login" />
+    <MESSAGE value="Sviluppo servizio chat in tempo reale" />
+    <option name="LAST_COMMIT_MESSAGE" value="Sviluppo servizio chat in tempo reale" />
   </component>
 </project>

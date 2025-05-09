@@ -17,4 +17,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('ml-results/', ml_service.process_ml_results, name='process-ml-results'),
+    path('users/me/stats/', views.UserViewSet.as_view({'get': 'stats'}), name='user-stats'),
+    path('users/leaderboard/', views.UserViewSet.as_view({'get': 'leaderboard'}), name='user-leaderboard'),
 ]

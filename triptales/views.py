@@ -13,7 +13,7 @@ from .permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly, IsGroupAdmin
 
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-
+from .badge_service import BadgeService
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -59,6 +59,86 @@ class RegisterView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Utente.objects.all()
     serializer_class = UserSerializer
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """Restituisce le statistiche dell'utente corrente."""
+        user = request.user
+
+        # Calcola le statistiche
+        post_count = DiaryPost.objects.filter(author=user).count()
+
+        # Likes ricevuti sui post dell'utente
+        likes_count = Like.objects.filter(post__author=user).count()
+
+        # Commenti fatti dall'utente
+        comments_count = Comment.objects.filter(author=user).count()
+
+        return Response({
+            'postCount': post_count,
+            'likesCount': likes_count,
+            'commentsCount': comments_count
+        })
+
+    @action(detail=False, methods=['get'])
+    def leaderboard(self, request):
+        """Restituisce la classifica degli utenti più attivi."""
+        # Ottieni il parametro opzionale per il gruppo
+        group_id = request.query_params.get('group_id', None)
+
+        # Base query per ottenere utenti con conteggio like
+        queryset = Utente.objects.annotate(
+            post_count=Count('posts', distinct=True),
+            like_count=Count('posts__likes', distinct=True),
+            comment_count=Count('comments', distinct=True),
+            total_score=Count('posts', distinct=True) +
+                        (Count('posts__likes', distinct=True) * 2) +
+                        Count('comments', distinct=True)
+        )
+
+        # Se specificato, filtra per gruppo
+        if group_id:
+            try:
+                group = Gruppo.objects.get(id=group_id)
+                queryset = queryset.filter(
+                    memberships__group=group
+                )
+            except Gruppo.DoesNotExist:
+                return Response(
+                    {"detail": "Gruppo non trovato."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+        # Ordina per punteggio totale
+        queryset = queryset.order_by('-total_score')[:10]
+
+        # Serializza i risultati
+        data = []
+        for user in queryset:
+            # Ottieni i badge dell'utente
+            user_badges = UserBadge.objects.filter(user=user)
+            badges = [
+                {
+                    "id": ub.badge.id,
+                    "name": ub.badge.name,
+                    "description": ub.badge.description,
+                    "icon_url": request.build_absolute_uri(ub.badge.icon_url.url) if ub.badge.icon_url else None
+                } for ub in user_badges
+            ]
+
+            data.append({
+                "id": user.id,
+                "username": user.username,
+                "profile_picture": request.build_absolute_uri(
+                    user.profile_picture.url) if user.profile_picture else None,
+                "post_count": user.post_count,
+                "like_count": user.like_count,
+                "comment_count": user.comment_count,
+                "total_score": user.total_score,
+                "badges": badges
+            })
+
+        return Response(data)
 
     def get_permissions(self):
         if self.action == 'create':
@@ -245,7 +325,10 @@ class DiaryPostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsMemberOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        post = serializer.save(author=self.request.user)
+        # Verifica i badge dopo la creazione di un post
+        BadgeService.check_all_badges(self.request.user)
+        return post
 
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
@@ -258,20 +341,12 @@ class DiaryPostViewSet(viewsets.ModelViewSet):
 
         # Create like
         like = Like.objects.create(user=request.user, post=post)
+
+        # Verifica i badge per l'autore del post dopo aver ricevuto un like
+        BadgeService.check_all_badges(post.author)
+
         serializer = LikeSerializer(like)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @action(detail=True, methods=['post'])
-    def unlike(self, request, pk=None):
-        post = self.get_object()
-
-        try:
-            like = Like.objects.get(user=request.user, post=post)
-            like.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Like.DoesNotExist:
-            return Response({"detail": "You haven't liked this post."},
-                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostMediaViewSet(viewsets.ModelViewSet):
@@ -279,6 +354,77 @@ class PostMediaViewSet(viewsets.ModelViewSet):
     serializer_class = PostMediaSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+
+    def perform_create(self, serializer):
+        media = serializer.save()
+        # Verifica i badge dopo il caricamento di un media
+        BadgeService.check_all_badges(media.post.author)
+        return media
+
+    @action(detail=False, methods=['post'])
+    def upload_media(self, request):
+        """
+        Upload a media file (image or video) for a diary post
+        """
+        post_id = request.data.get('post_id')
+        if not post_id:
+            return Response(
+                {"detail": "Post ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            post = DiaryPost.objects.get(id=post_id)
+        except DiaryPost.DoesNotExist:
+            return Response(
+                {"detail": "Post not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Verifica che l'utente sia l'autore del post o un membro del gruppo
+        if post.author != request.user and not post.group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Permission denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Verifica che ci sia un file media
+        if 'media_file' not in request.FILES:
+            return Response(
+                {"detail": "No media file provided."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Determina il tipo di media (immagine o video)
+        file = request.FILES['media_file']
+        file_name = file.name.lower()
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+            media_type = 'image'
+        elif file_name.endswith(('.mp4', '.mov', '.avi')):
+            media_type = 'video'
+        else:
+            return Response(
+                {"detail": "Unsupported file type."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crea il media
+        media = PostMedia.objects.create(
+            post=post,
+            media_type=media_type,
+            media_url=file,
+            latitude=request.data.get('latitude'),
+            longitude=request.data.get('longitude'),
+            detected_objects=request.data.get('detected_objects'),
+            ocr_text=request.data.get('ocr_text'),
+            caption=request.data.get('caption')
+        )
+
+        # Verifica i badge dopo il caricamento di un media
+        BadgeService.check_all_badges(request.user)
+
+        serializer = PostMediaSerializer(media)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post'])
     def upload_chat_image(self, request):
@@ -329,6 +475,9 @@ class PostMediaViewSet(viewsets.ModelViewSet):
             media_type='image',
             media_url=request.FILES['media_file']
         )
+
+        # Verifica i badge dopo il caricamento di un'immagine in chat
+        BadgeService.check_all_badges(request.user)
 
         # Restituisci l'URL dell'immagine
         serializer = PostMediaSerializer(media)
