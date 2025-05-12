@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from .models import Utente, Gruppo, GroupMembership, DiaryPost, PostMedia, Comment, Like, Badge, UserBadge
 from .serializers import (UserSerializer, TripGroupSerializer, GroupMembershipSerializer,
                           DiaryPostSerializer, PostMediaSerializer, CommentSerializer,
-                          LikeSerializer, BadgeSerializer, UserBadgeSerializer)
+                          LikeSerializer, BadgeSerializer, UserBadgeSerializer, GroupInvite, GroupInviteSerializer)
 from .permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly, IsGroupAdmin
 
 from rest_framework.views import APIView
@@ -168,6 +168,8 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+# In triptales/views.py
+
 class TripGroupViewSet(viewsets.ModelViewSet):
     queryset = Gruppo.objects.all()
     serializer_class = TripGroupSerializer
@@ -175,10 +177,63 @@ class TripGroupViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'location']
 
+    @action(detail=False, methods=['get'])
+    def my(self, request):
+        """Restituisce i gruppi dell'utente corrente."""
+        user = request.user
+        # Ottieni tutti i gruppi di cui l'utente è membro
+        memberships = GroupMembership.objects.filter(user=user)
+        groups = []
+
+        for membership in memberships:
+            group = membership.group
+            # Trova l'ultimo post o messaggio nel gruppo
+            last_activity = DiaryPost.objects.filter(group=group).order_by('-created_at').first()
+
+            # Aggiungi campo lastActivityDate al gruppo
+            setattr(group, 'lastActivityDate',
+                    last_activity.created_at if last_activity else group.created_at)
+
+            # Aggiungi campo user_role al gruppo
+            setattr(group, 'user_role', membership.role)
+
+            groups.append(group)
+
+        serializer = self.get_serializer(groups, many=True, context={'request': request})
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
-        group = serializer.save(created_by=self.request.user)
-        # Auto-add creator as admin
-        GroupMembership.objects.create(user=self.request.user, group=group, role='admin')
+        try:
+            # Crea il gruppo con l'utente corrente come creatore
+            group = serializer.save(created_by=self.request.user)
+
+            # Aggiungi automaticamente il creatore come admin del gruppo
+            membership = GroupMembership.objects.create(
+                user=self.request.user,
+                group=group,
+                role='admin'
+            )
+
+            # Log dell'operazione per debug
+            print(f"Gruppo {group.id} creato da {self.request.user.username} con ruolo admin")
+
+            return group
+        except Exception as e:
+            # Log dell'errore
+            print(f"Errore nella creazione del gruppo: {str(e)}")
+            raise
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        group = self.perform_create(serializer)
+
+        # Aggiungi informazioni sulla membership alla risposta
+        response_data = serializer.data
+        response_data['user_role'] = 'admin'
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=True, methods=['post'])
     def join(self, request, pk=None):
@@ -291,6 +346,118 @@ class TripGroupViewSet(viewsets.ModelViewSet):
 
         serializer = DiaryPostSerializer(message, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # Aggiungi al TripGroupViewSet in triptales/views.py
+
+    @action(detail=True, methods=['post'])
+    def invite_user(self, request, pk=None):
+        """Invita un utente al gruppo."""
+        group = self.get_object()
+
+        # Verifica che l'utente che invia l'invito sia membro del gruppo
+        if not GroupMembership.objects.filter(user=request.user, group=group).exists():
+            return Response(
+                {"detail": "Solo i membri del gruppo possono inviare inviti."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Ottieni o cerca l'utente da invitare
+        user_to_invite = None
+        username_or_email = request.data.get('username_or_email')
+
+        if not username_or_email:
+            return Response(
+                {"detail": "Username o email dell'utente da invitare sono richiesti."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Cerca l'utente per username o email
+        try:
+            if '@' in username_or_email:
+                user_to_invite = Utente.objects.get(email=username_or_email)
+            else:
+                user_to_invite = Utente.objects.get(username=username_or_email)
+        except Utente.DoesNotExist:
+            return Response(
+                {"detail": "Utente non trovato."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Verifica che l'utente non sia già nel gruppo
+        if GroupMembership.objects.filter(user=user_to_invite, group=group).exists():
+            return Response(
+                {"detail": "L'utente è già membro del gruppo."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Verifica che non ci sia già un invito pendente per questo utente
+        if GroupInvite.objects.filter(invited_user=user_to_invite, group=group, status='pending').exists():
+            return Response(
+                {"detail": "Esiste già un invito pendente per questo utente."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crea l'invito
+        invite = GroupInvite.objects.create(
+            group=group,
+            invited_by=request.user,
+            invited_user=user_to_invite,
+            status='pending'
+        )
+
+        serializer = GroupInviteSerializer(invite)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def my_invites(self, request):
+        """Ottiene tutti gli inviti pendenti per l'utente corrente."""
+        invites = GroupInvite.objects.filter(
+            invited_user=request.user,
+            status='pending'
+        )
+        serializer = GroupInviteSerializer(invites, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def accept_invite(self, request, pk=None):
+        """Accetta un invito al gruppo."""
+        try:
+            invite = GroupInvite.objects.get(id=pk, invited_user=request.user, status='pending')
+        except GroupInvite.DoesNotExist:
+            return Response(
+                {"detail": "Invito non trovato o già processato."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Aggiorna lo stato dell'invito
+        invite.status = 'accepted'
+        invite.save()
+
+        # Aggiungi l'utente al gruppo
+        membership = GroupMembership.objects.create(
+            user=request.user,
+            group=invite.group,
+            role='member'
+        )
+
+        return Response(GroupMembershipSerializer(membership).data)
+
+    @action(detail=True, methods=['post'])
+    def decline_invite(self, request, pk=None):
+        """Rifiuta un invito al gruppo."""
+        try:
+            invite = GroupInvite.objects.get(id=pk, invited_user=request.user, status='pending')
+        except GroupInvite.DoesNotExist:
+            return Response(
+                {"detail": "Invito non trovato o già processato."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Aggiorna lo stato dell'invito
+        invite.status = 'declined'
+        invite.save()
+
+        return Response({"detail": "Invito rifiutato con successo."})
 
 class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
@@ -525,3 +692,85 @@ class UserBadgeViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "Requirements not met for Explorer badge."},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+# Aggiungi questo nel file triptales/views.py
+
+class GroupInviteViewSet(viewsets.ModelViewSet):
+    """ViewSet per gestire gli inviti ai gruppi."""
+    queryset = GroupInvite.objects.all()
+    serializer_class = GroupInviteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """Filtra gli inviti in base all'utente autenticato."""
+        user = self.request.user
+        return GroupInvite.objects.filter(invited_user=user, status='pending')
+
+    @action(detail=False, methods=['get'])
+    def my_invites(self, request):
+        """Ottiene tutti gli inviti pendenti per l'utente corrente."""
+        user = request.user
+        invites = GroupInvite.objects.filter(
+            invited_user=user,
+            status='pending'
+        )
+        serializer = GroupInviteSerializer(invites, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        """Accetta un invito al gruppo."""
+        invite = self.get_object()
+
+        # Verifica che l'invito sia per l'utente corrente
+        if invite.invited_user != request.user:
+            return Response(
+                {"detail": "Questo invito non è per te."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Verifica che l'invito sia ancora in stato pendente
+        if invite.status != 'pending':
+            return Response(
+                {"detail": "Questo invito è già stato processato."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Aggiorna lo stato dell'invito
+        invite.status = 'accepted'
+        invite.save()
+
+        # Aggiungi l'utente al gruppo
+        GroupMembership.objects.create(
+            user=request.user,
+            group=invite.group,
+            role='member'
+        )
+
+        return Response({"detail": "Invito accettato con successo."})
+
+    @action(detail=True, methods=['post'])
+    def decline(self, request, pk=None):
+        """Rifiuta un invito al gruppo."""
+        invite = self.get_object()
+
+        # Verifica che l'invito sia per l'utente corrente
+        if invite.invited_user != request.user:
+            return Response(
+                {"detail": "Questo invito non è per te."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Verifica che l'invito sia ancora in stato pendente
+        if invite.status != 'pending':
+            return Response(
+                {"detail": "Questo invito è già stato processato."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Aggiorna lo stato dell'invito
+        invite.status = 'declined'
+        invite.save()
+
+        return Response({"detail": "Invito rifiutato con successo."})

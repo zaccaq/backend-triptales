@@ -3,6 +3,9 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 
+
+
+
 class Utente(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     registration_date = models.DateTimeField(default=timezone.now)
@@ -123,3 +126,25 @@ class UserBadge(models.Model):
 
     def __str__(self):
         return f"{self.user.username} earned {self.badge.name}"
+
+
+# Aggiungi questo al file triptales/models.py
+
+class GroupInvite(models.Model):
+    INVITE_STATUS = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
+
+    group = models.ForeignKey(Gruppo, on_delete=models.CASCADE, related_name='invites')
+    invited_by = models.ForeignKey(Utente, on_delete=models.CASCADE, related_name='sent_invites')
+    invited_user = models.ForeignKey(Utente, on_delete=models.CASCADE, related_name='received_invites')
+    status = models.CharField(max_length=10, choices=INVITE_STATUS, default='pending')
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('group', 'invited_user')
+
+    def __str__(self):
+        return f"Invite for {self.invited_user.username} to {self.group.name}"

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Utente, Gruppo, GroupMembership, DiaryPost, PostMedia, Comment, Like, Badge, UserBadge
+from .models import Utente, Gruppo, GroupMembership, DiaryPost, PostMedia, Comment, Like, Badge, UserBadge, GroupInvite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -106,3 +106,17 @@ class UserBadgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBadge
         fields = ['id', 'user', 'badge', 'earned_at']
+
+
+# Aggiungi al file triptales/serializers.py
+
+# Aggiungi questo nel file triptales/serializers.py
+
+class GroupInviteSerializer(serializers.ModelSerializer):
+    invited_by = UserSerializer(read_only=True)
+    invited_user = UserSerializer(read_only=True)
+    group = TripGroupSerializer(read_only=True)
+
+    class Meta:
+        model = GroupInvite
+        fields = ['id', 'group', 'invited_by', 'invited_user', 'status', 'created_at']
