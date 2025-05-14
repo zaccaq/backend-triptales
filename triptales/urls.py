@@ -21,5 +21,5 @@ urlpatterns = [
     path('users/me/stats/', views.UserViewSet.as_view({'get': 'stats'}), name='user-stats'),
     path('users/leaderboard/', views.UserViewSet.as_view({'get': 'leaderboard'}), name='user-leaderboard'),
     path('api/trip-groups/my/', views.TripGroupViewSet.as_view({'get': 'my'}), name='my-groups'),
-    path('trip-groups/my_invites/', views.GroupInviteViewSet.as_view({'get': 'my_invites'}), name='my-invites'),
+    path('trip-groups/my_invites/', views.GroupInviteViewSet.as_view({'get': 'my_invites'}), name='my-invites')
 ]
