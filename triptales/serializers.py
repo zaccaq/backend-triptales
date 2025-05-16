@@ -31,7 +31,7 @@ class TripGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gruppo
         fields = ['id', 'name', 'description', 'cover_image', 'start_date', 'end_date',
-                  'location', 'created_by', 'created_at', 'member_count']
+                  'location', 'created_by', 'created_at', 'member_count', 'is_private']
 
     def get_member_count(self, obj):
         return obj.memberships.count()

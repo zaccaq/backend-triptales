@@ -204,8 +204,9 @@ class TripGroupViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            # Crea il gruppo con l'utente corrente come creatore
-            group = serializer.save(created_by=self.request.user)
+            # Crea il gruppo con l'utente corrente come creatore e il parametro is_private
+            is_private = self.request.data.get('is_private', False)
+            group = serializer.save(created_by=self.request.user, is_private=is_private)
 
             # Aggiungi automaticamente il creatore come admin del gruppo
             membership = GroupMembership.objects.create(
@@ -244,12 +245,38 @@ class TripGroupViewSet(viewsets.ModelViewSet):
             return Response({"detail": "You are already a member of this group."},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # Verifica se il gruppo è privato
+        if group.is_private:
+            # Verifica se esiste un invito per l'utente
+            has_invite = GroupInvite.objects.filter(
+                invited_user=request.user,
+                group=group,
+                status='pending'
+            ).exists()
+
+            if not has_invite:
+                return Response(
+                    {"detail": "Questo gruppo è privato. Hai bisogno di un invito per unirti."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
         # Add user to group
         membership = GroupMembership.objects.create(
             user=request.user,
             group=group,
             role='member'
         )
+
+        # Se c'era un invito in sospeso, segnalo come accettato
+        pending_invite = GroupInvite.objects.filter(
+            invited_user=request.user,
+            group=group,
+            status='pending'
+        ).first()
+
+        if pending_invite:
+            pending_invite.status = 'accepted'
+            pending_invite.save()
 
         serializer = GroupMembershipSerializer(membership)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -346,6 +373,24 @@ class TripGroupViewSet(viewsets.ModelViewSet):
 
         serializer = DiaryPostSerializer(message, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        query = request.query_params.get('search', '')
+        if not query:
+            return Response({"detail": "Parametro di ricerca mancante"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Cerca i gruppi che corrispondono alla query
+        queryset = Gruppo.objects.filter(name__icontains=query)
+
+        # Filtra i gruppi: mostra solo quelli pubblici O quelli di cui l'utente è membro
+        user_memberships = GroupMembership.objects.filter(user=request.user).values_list('group', flat=True)
+        queryset = queryset.filter(
+            models.Q(is_private=False) | models.Q(id__in=user_memberships)
+        )
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     # Aggiungi al TripGroupViewSet in triptales/views.py
 

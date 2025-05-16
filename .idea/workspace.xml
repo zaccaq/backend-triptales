@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Sviluppo servizio inviti ai vari gruppi">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,6 +131,8 @@
       <workItem from="1746773723116" duration="3320000" />
       <workItem from="1746970915911" duration="969000" />
       <workItem from="1747028979808" duration="12183000" />
+      <workItem from="1747216841584" duration="2005000" />
+      <workItem from="1747403616296" duration="4300000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -189,7 +198,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747047453222</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Sviluppo servizio inviti ai vari gruppi">
+      <option name="closed" value="true" />
+      <created>1747217139189</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1747217139189</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

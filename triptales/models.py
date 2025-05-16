@@ -23,6 +23,7 @@ class Gruppo(models.Model):
     location = models.CharField(max_length=255)
     created_by = models.ForeignKey(Utente, on_delete=models.CASCADE, related_name='created_groups')
     created_at = models.DateTimeField(default=timezone.now)
+    is_private = models.BooleanField(default=False)  # Campo aggiunto
 
     def __str__(self):
         return self.name
