@@ -34,7 +34,7 @@ class TripGroupSerializer(serializers.ModelSerializer):
                   'location', 'created_by', 'created_at', 'member_count', 'is_private']
 
     def get_member_count(self, obj):
-        return obj.memberships.count()
+        return GroupMembership.objects.filter(group=obj).count()
 
 
 class GroupMembershipSerializer(serializers.ModelSerializer):
