@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import viewsets, permissions, status, filters, parsers
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -176,6 +177,133 @@ class TripGroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'location']
+
+    # Aggiungi questo metodo alla classe TripGroupViewSet in triptales/views.py
+
+    @action(detail=True, methods=['get'])
+    def map_posts(self, request, pk=None):
+        """
+        Restituisce tutti i post con geolocalizzazione per la mappa del gruppo
+        """
+        group = self.get_object()
+
+        # Verifica che l'utente faccia parte del gruppo
+        if not group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "You are not a member of this group."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Ottieni i post con coordinate valide
+        posts_with_location = DiaryPost.objects.filter(
+            group=group,
+            is_chat_message=False,  # Esclude i messaggi chat
+            latitude__isnull=False,
+            longitude__isnull=False
+        ).select_related('author').prefetch_related('media', 'likes').order_by('-created_at')
+
+        # Serializza i dati per la mappa
+        map_data = []
+        for post in posts_with_location:
+            # Prendi la prima immagine se disponibile
+            first_image = post.media.filter(media_type='image').first()
+
+            map_data.append({
+                'id': post.id,
+                'title': post.title,
+                'content': post.content,
+                'latitude': post.latitude,
+                'longitude': post.longitude,
+                'location_name': post.location_name or 'Posizione sconosciuta',
+                'created_at': post.created_at,
+                'author': {
+                    'id': post.author.id,
+                    'username': post.author.username,
+                    'profile_picture': request.build_absolute_uri(
+                        post.author.profile_picture.url) if post.author.profile_picture else None
+                },
+                'image_url': request.build_absolute_uri(first_image.media_url.url) if first_image else None,
+                'likes_count': post.likes.count(),
+                'user_has_liked': post.likes.filter(user=request.user).exists()
+            })
+
+        return Response({
+            'group_name': group.name,
+            'group_location': group.location,
+            'posts': map_data
+        })
+
+    @action(detail=True, methods=['post'])
+    def add_location_post(self, request, pk=None):
+        """
+        Crea un nuovo post con geolocalizzazione
+        """
+        group = self.get_object()
+
+        # Verifica che l'utente faccia parte del gruppo
+        if not group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "You are not a member of this group."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Dati richiesti
+        title = request.data.get('title', '')
+        content = request.data.get('content', '')
+        latitude = request.data.get('latitude')
+        longitude = request.data.get('longitude')
+        location_name = request.data.get('location_name', '')
+
+        if not title or not content:
+            return Response(
+                {"detail": "Title and content are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not latitude or not longitude:
+            return Response(
+                {"detail": "Latitude and longitude are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Crea il post
+            post = DiaryPost.objects.create(
+                group=group,
+                author=request.user,
+                title=title,
+                content=content,
+                latitude=float(latitude),
+                longitude=float(longitude),
+                location_name=location_name
+            )
+
+            # Se c'è un'immagine, aggiungila
+            if 'image' in request.FILES:
+                PostMedia.objects.create(
+                    post=post,
+                    media_type='image',
+                    media_url=request.FILES['image'],
+                    latitude=float(latitude),
+                    longitude=float(longitude)
+                )
+
+            # Verifica i badge dopo la creazione di un post con posizione
+            BadgeService.check_all_badges(request.user)
+
+            serializer = DiaryPostSerializer(post, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except ValueError as e:
+            return Response(
+                {"detail": "Invalid latitude or longitude values."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"detail": f"Error creating post: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['get'])
     def my(self, request):
@@ -531,36 +659,162 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+# Aggiungi questi metodi alla classe DiaryPostViewSet in triptales/views.py
+
+from django.db.models import Q
+from math import radians, cos, sin, asin, sqrt
+from rest_framework.decorators import action
+
+# Aggiungi questi metodi alla classe DiaryPostViewSet in triptales/views.py
+
+from django.db.models import Q
+from math import radians, cos, sin, asin, sqrt
+from rest_framework.decorators import action
+
+
 class DiaryPostViewSet(viewsets.ModelViewSet):
     queryset = DiaryPost.objects.all()
     serializer_class = DiaryPostSerializer
     permission_classes = [permissions.IsAuthenticated, IsMemberOrReadOnly]
 
+    def get_queryset(self):
+        """Filtra i post in base all'utente e ai suoi gruppi"""
+        user = self.request.user
+        # Mostra solo i post dei gruppi di cui l'utente è membro
+        user_groups = user.memberships.values_list('group', flat=True)
+        return DiaryPost.objects.filter(group__in=user_groups).order_by('-created_at')
+
     def perform_create(self, serializer):
+        """Crea un nuovo post con l'autore corrente"""
         post = serializer.save(author=self.request.user)
         # Verifica i badge dopo la creazione di un post
         BadgeService.check_all_badges(self.request.user)
         return post
 
+    @action(detail=False, methods=['get'])
+    def my_posts(self, request):
+        """Restituisce tutti i post dell'utente corrente"""
+        posts = DiaryPost.objects.filter(
+            author=request.user,
+            is_chat_message=False  # Escludi i messaggi di chat
+        ).order_by('-created_at')
+
+        serializer = self.get_serializer(posts, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def nearby(self, request):
+        """Restituisce i post nelle vicinanze di una posizione specifica"""
+        try:
+            latitude = float(request.query_params.get('latitude'))
+            longitude = float(request.query_params.get('longitude'))
+            radius = float(request.query_params.get('radius', 10.0))  # Default 10km
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "Parametri latitude e longitude sono richiesti e devono essere numerici"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Filtra i post che hanno coordinate
+        posts_with_location = DiaryPost.objects.filter(
+            latitude__isnull=False,
+            longitude__isnull=False,
+            is_chat_message=False
+        )
+
+        # Filtra per gruppi accessibili all'utente
+        user_groups = request.user.memberships.values_list('group', flat=True)
+        posts_with_location = posts_with_location.filter(group__in=user_groups)
+
+        # Calcola la distanza e filtra
+        nearby_posts = []
+        for post in posts_with_location:
+            distance = calculate_distance(latitude, longitude, post.latitude, post.longitude)
+            if distance <= radius:
+                nearby_posts.append(post)
+
+        # Ordina per distanza (più vicini prima)
+        nearby_posts.sort(key=lambda p: calculate_distance(latitude, longitude, p.latitude, p.longitude))
+
+        serializer = self.get_serializer(nearby_posts, many=True, context={'request': request})
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
+        """Like/Unlike di un post"""
         post = self.get_object()
 
-        # Check if already liked
-        if Like.objects.filter(user=request.user, post=post).exists():
-            return Response({"detail": "You've already liked this post."},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # Verifica se l'utente può vedere questo post (è membro del gruppo)
+        if not post.group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Non hai il permesso di interagire con questo post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-        # Create like
-        like = Like.objects.create(user=request.user, post=post)
+        # Controlla se l'utente ha già messo like
+        existing_like = Like.objects.filter(user=request.user, post=post).first()
 
-        # Verifica i badge per l'autore del post dopo aver ricevuto un like
-        BadgeService.check_all_badges(post.author)
+        if existing_like:
+            # Rimuovi il like (toggle)
+            existing_like.delete()
+            liked = False
+            message = "Like rimosso"
+        else:
+            # Aggiungi il like
+            Like.objects.create(user=request.user, post=post)
+            liked = True
+            message = "Like aggiunto"
 
-        serializer = LikeSerializer(like)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Verifica i badge per l'autore del post dopo aver ricevuto un like
+            BadgeService.check_all_badges(post.author)
+
+        # Conta i like totali
+        total_likes = post.likes.count()
+
+        return Response({
+            "liked": liked,
+            "total_likes": total_likes,
+            "message": message
+        }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def feed(self, request):
+        """Feed personalizzato dell'utente con post dei suoi gruppi"""
+        user_groups = request.user.memberships.values_list('group', flat=True)
+
+        # Ottieni post recenti dai gruppi dell'utente (non messaggi chat)
+        posts = DiaryPost.objects.filter(
+            group__in=user_groups,
+            is_chat_message=False
+        ).select_related('author', 'group').prefetch_related(
+            'media', 'likes', 'comments'
+        ).order_by('-created_at')[:20]  # Ultimi 20 post
+
+        serializer = self.get_serializer(posts, many=True, context={'request': request})
+        return Response(serializer.data)
 
 
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Calcola la distanza tra due punti geografici usando la formula di Haversine
+    Restituisce la distanza in chilometri
+    """
+    # Converti gradi in radianti
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Formula di Haversine
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+
+    # Raggio della Terra in km
+    r = 6371
+
+    return c * r
+
+
+# Aggiorna anche il PostMediaViewSet per migliorare l'upload
 class PostMediaViewSet(viewsets.ModelViewSet):
     queryset = PostMedia.objects.all()
     serializer_class = PostMediaSerializer
@@ -576,12 +830,12 @@ class PostMediaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def upload_media(self, request):
         """
-        Upload a media file (image or video) for a diary post
+        Upload migliorato per media con supporto ML Kit
         """
         post_id = request.data.get('post_id')
         if not post_id:
             return Response(
-                {"detail": "Post ID is required."},
+                {"detail": "Post ID è richiesto."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -589,111 +843,97 @@ class PostMediaViewSet(viewsets.ModelViewSet):
             post = DiaryPost.objects.get(id=post_id)
         except DiaryPost.DoesNotExist:
             return Response(
-                {"detail": "Post not found."},
+                {"detail": "Post non trovato."},
                 status=status.HTTP_404_NOT_FOUND
             )
 
         # Verifica che l'utente sia l'autore del post o un membro del gruppo
         if post.author != request.user and not post.group.memberships.filter(user=request.user).exists():
             return Response(
-                {"detail": "Permission denied."},
+                {"detail": "Permesso negato."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
         # Verifica che ci sia un file media
         if 'media_file' not in request.FILES:
             return Response(
-                {"detail": "No media file provided."},
+                {"detail": "File media non fornito."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Determina il tipo di media (immagine o video)
+        # Determina il tipo di media
         file = request.FILES['media_file']
         file_name = file.name.lower()
-        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+        if file_name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
             media_type = 'image'
-        elif file_name.endswith(('.mp4', '.mov', '.avi')):
+        elif file_name.endswith(('.mp4', '.mov', '.avi', '.mkv')):
             media_type = 'video'
         else:
             return Response(
-                {"detail": "Unsupported file type."},
+                {"detail": "Tipo di file non supportato. Usa immagini (jpg, png, gif) o video (mp4, mov, avi)."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Crea il media
-        media = PostMedia.objects.create(
-            post=post,
-            media_type=media_type,
-            media_url=file,
-            latitude=request.data.get('latitude'),
-            longitude=request.data.get('longitude'),
-            detected_objects=request.data.get('detected_objects'),
-            ocr_text=request.data.get('ocr_text'),
-            caption=request.data.get('caption')
-        )
+        # Crea il media con tutti i dati opzionali
+        media_data = {
+            'post': post,
+            'media_type': media_type,
+            'media_url': file,
+        }
 
-        # Verifica i badge dopo il caricamento di un media
+        # Aggiungi dati opzionali se presenti
+        optional_fields = ['latitude', 'longitude', 'detected_objects', 'ocr_text', 'caption']
+        for field in optional_fields:
+            if field in request.data and request.data[field]:
+                if field in ['latitude', 'longitude']:
+                    try:
+                        media_data[field] = float(request.data[field])
+                    except ValueError:
+                        pass
+                else:
+                    media_data[field] = request.data[field]
+
+        media = PostMedia.objects.create(**media_data)
+
+        # Verifica i badge dopo il caricamento
         BadgeService.check_all_badges(request.user)
 
-        serializer = PostMediaSerializer(media)
+        serializer = PostMediaSerializer(media, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['post'])
-    def upload_chat_image(self, request):
+    @action(detail=True, methods=['post'])
+    def process_ml_results(self, request, pk=None):
         """
-        Upload an image for a chat message
+        Endpoint per processare risultati ML Kit dal client Android
         """
-        group_id = request.data.get('group_id')
-        if not group_id:
-            return Response(
-                {"detail": "Group ID is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        media = self.get_object()
 
-        try:
-            group = Gruppo.objects.get(id=group_id)
-        except Gruppo.DoesNotExist:
+        # Verifica permessi
+        if media.post.author != request.user:
             return Response(
-                {"detail": "Group not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Verifica che l'utente faccia parte del gruppo
-        if not group.memberships.filter(user=request.user).exists():
-            return Response(
-                {"detail": "You are not a member of this group."},
+                {"detail": "Solo l'autore può aggiornare i risultati ML."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Verifica che ci sia un'immagine
-        if 'media_file' not in request.FILES:
-            return Response(
-                {"detail": "No image file provided."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        # Aggiorna con i risultati ML Kit
+        ml_results = request.data.get('ml_results', {})
 
-        # Crea un post per il messaggio di chat
-        post = DiaryPost.objects.create(
-            group=group,
-            author=request.user,
-            title="Chat image",
-            content="",
-            is_chat_message=True
-        )
+        if 'detected_objects' in ml_results:
+            media.detected_objects = ml_results['detected_objects']
 
-        # Crea il media
-        media = PostMedia.objects.create(
-            post=post,
-            media_type='image',
-            media_url=request.FILES['media_file']
-        )
+        if 'ocr_text' in ml_results:
+            media.ocr_text = ml_results['ocr_text']
 
-        # Verifica i badge dopo il caricamento di un'immagine in chat
+        if 'caption' in ml_results:
+            media.caption = ml_results['caption']
+
+        media.save()
+
+        # Verifica badge dopo il processing ML
         BadgeService.check_all_badges(request.user)
 
-        # Restituisci l'URL dell'immagine
-        serializer = PostMediaSerializer(media)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer(media)
+        return Response(serializer.data)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

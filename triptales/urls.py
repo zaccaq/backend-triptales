@@ -22,5 +22,7 @@ urlpatterns = [
     path('users/leaderboard/', views.UserViewSet.as_view({'get': 'leaderboard'}), name='user-leaderboard'),
     path('api/trip-groups/my/', views.TripGroupViewSet.as_view({'get': 'my'}), name='my-groups'),
     path('trip-groups/my_invites/', views.GroupInviteViewSet.as_view({'get': 'my_invites'}), name='my-invites'),
-    path('api/trip-groups/search/', views.TripGroupViewSet.as_view({'get': 'search'}), name='group-search')
+    path('api/trip-groups/search/', views.TripGroupViewSet.as_view({'get': 'search'}), name='group-search'),
+    path('api/trip-groups/<int:pk>/map_posts/', views.TripGroupViewSet.as_view({'get': 'map_posts'}), name='group-map-posts'),
+    path('api/trip-groups/<int:pk>/add_location_post/', views.TripGroupViewSet.as_view({'post': 'add_location_post'}), name='add-location-post'),
 ]
