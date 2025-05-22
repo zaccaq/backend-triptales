@@ -119,3 +119,79 @@ class BadgeService:
             )[0]
 
             UserBadge.objects.get_or_create(user=user, badge=social_badge)
+
+    @staticmethod
+    def check_ai_explorer_badge(user):
+        """Verifica se l'utente merita il badge 'AI Explorer'."""
+        # Badge per chi usa tutte le funzionalità ML Kit
+        ml_features_used = 0
+
+        # Controlla OCR usage
+        if PostMedia.objects.filter(
+                post__author=user,
+                ocr_text__isnull=False,
+                ocr_text__gt=''
+        ).exists():
+            ml_features_used += 1
+
+        # Controlla Object Detection usage
+        if PostMedia.objects.filter(
+                post__author=user,
+                detected_objects__isnull=False
+        ).exists():
+            ml_features_used += 1
+
+        # Controlla Caption generation usage
+        if PostMedia.objects.filter(
+                post__author=user,
+                caption__isnull=False,
+                caption__gt=''
+        ).exists():
+            ml_features_used += 1
+
+        if ml_features_used >= 3:  # Ha usato tutte e 3 le funzionalità
+            ai_explorer_badge = Badge.objects.get_or_create(
+                name="AI Explorer",
+                defaults={
+                    'description': 'Hai sfruttato tutte le funzionalità AI: OCR, riconoscimento oggetti e caption intelligenti!',
+                    'icon_url': 'badge_icons/ai_explorer.png',
+                    'criteria': {'ml_features': 3}
+                }
+            )[0]
+
+            UserBadge.objects.get_or_create(user=user, badge=ai_explorer_badge)
+
+    @staticmethod
+    def check_polyglot_badge(user):
+        """Verifica se l'utente merita il badge 'Polyglot'."""
+        # Badge per chi usa spesso la traduzione
+        translation_count = PostMedia.objects.filter(
+            post__author=user,
+            ocr_text__isnull=False,
+            ocr_text__gt=''
+        ).count()
+
+        if translation_count >= 10:
+            polyglot_badge = Badge.objects.get_or_create(
+                name="Polyglot",
+                defaults={
+                    'description': 'Maestro delle lingue! Hai tradotto testo in 10+ foto diverse.',
+                    'icon_url': 'badge_icons/polyglot.png',
+                    'criteria': {'translations': 10}
+                }
+            )[0]
+
+            UserBadge.objects.get_or_create(user=user, badge=polyglot_badge)
+
+    # Aggiorna il metodo check_all_badges
+    @staticmethod
+    def check_all_badges(user):
+        """Verifica tutti i possibili badge per un utente."""
+        BadgeService.check_explorer_badge(user)
+        BadgeService.check_translator_badge(user)
+        BadgeService.check_observer_badge(user)
+        BadgeService.check_photographer_badge(user)
+        BadgeService.check_social_badge(user)
+        # NUOVI badge ML Kit
+        BadgeService.check_ai_explorer_badge(user)
+        BadgeService.check_polyglot_badge(user)

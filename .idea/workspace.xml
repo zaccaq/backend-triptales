@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Implementazione della creazione dei post con geolocalizzazione">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/triptales/badge_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/badge_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +129,7 @@
       <workItem from="1747216841584" duration="2005000" />
       <workItem from="1747403616296" duration="4300000" />
       <workItem from="1747812303921" duration="2782000" />
-      <workItem from="1747896711717" duration="8441000" />
+      <workItem from="1747896711717" duration="10272000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -211,7 +211,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747911283662</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Implementazione della creazione dei post con geolocalizzazione">
+      <option name="closed" value="true" />
+      <created>1747921930295</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1747921930295</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
