@@ -4,22 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Sviluppo servizio inviti ai vari gruppi">
-      <change beforePath="$PROJECT_DIR$/.idea/backend-triptales.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/backend-triptales.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/04fdf8cd-96f2-44f1-91d6-b30589a570a2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/04fdf8cd-96f2-44f1-91d6-b30589a570a2/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/94cb6f77-e558-4da4-8d8c-e082181c29a7.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/94cb6f77-e558-4da4-8d8c-e082181c29a7/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Implementazione della creazione dei post con geolocalizzazione">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/triptales/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +129,7 @@
       <workItem from="1747216841584" duration="2005000" />
       <workItem from="1747403616296" duration="4300000" />
       <workItem from="1747812303921" duration="2782000" />
-      <workItem from="1747896711717" duration="5813000" />
+      <workItem from="1747896711717" duration="8441000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
@@ -216,7 +203,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747217139189</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Implementazione della creazione dei post con geolocalizzazione">
+      <option name="closed" value="true" />
+      <created>1747911283662</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1747911283662</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -254,6 +249,7 @@
     <MESSAGE value="Modifiche settings.py per il Login" />
     <MESSAGE value="Sviluppo servizio chat in tempo reale" />
     <MESSAGE value="Sviluppo servizio inviti ai vari gruppi" />
-    <option name="LAST_COMMIT_MESSAGE" value="Sviluppo servizio inviti ai vari gruppi" />
+    <MESSAGE value="Implementazione della creazione dei post con geolocalizzazione" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementazione della creazione dei post con geolocalizzazione" />
   </component>
 </project>
