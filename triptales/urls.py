@@ -31,8 +31,22 @@ urlpatterns = [
     path('api/trip-groups/<int:pk>/add_location_post/',
          views.TripGroupViewSet.as_view({'post': 'add_location_post'}),
          name='add-location-post'),
+
     path('api/diary-posts/nearby/',
          views.DiaryPostViewSet.as_view({'get': 'nearby'}),
          name='nearby-posts'),
+
+    # NUOVI URL per like e commenti
+    path('api/diary-posts/<int:pk>/like/',
+         views.DiaryPostViewSet.as_view({'post': 'like'}),
+         name='post-like'),
+
+    path('api/diary-posts/<int:pk>/comments/',
+         views.DiaryPostViewSet.as_view({'get': 'comments'}),
+         name='post-comments'),
+
+    path('api/diary-posts/<int:pk>/add_comment/',
+         views.DiaryPostViewSet.as_view({'post': 'add_comment'}),
+         name='add-comment'),
 
 ]

@@ -1,3 +1,5 @@
+from math import radians, sin, cos, sqrt, asin
+
 from django.db import models
 from rest_framework import viewsets, permissions, status, filters, parsers
 from rest_framework.decorators import action
@@ -659,23 +661,98 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-# Aggiungi questi metodi alla classe DiaryPostViewSet in triptales/views.py
-
-from django.db.models import Q
-from math import radians, cos, sin, asin, sqrt
-from rest_framework.decorators import action
-
-# Aggiungi questi metodi alla classe DiaryPostViewSet in triptales/views.py
-
-from django.db.models import Q
-from math import radians, cos, sin, asin, sqrt
-from rest_framework.decorators import action
-
 
 class DiaryPostViewSet(viewsets.ModelViewSet):
     queryset = DiaryPost.objects.all()
     serializer_class = DiaryPostSerializer
     permission_classes = [permissions.IsAuthenticated, IsMemberOrReadOnly]
+
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        """Like/Unlike di un post"""
+        post = self.get_object()
+
+        # Verifica se l'utente può vedere questo post (è membro del gruppo)
+        if not post.group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Non hai il permesso di interagire con questo post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Controlla se l'utente ha già messo like
+        existing_like = Like.objects.filter(user=request.user, post=post).first()
+
+        if existing_like:
+            # Rimuovi il like (toggle)
+            existing_like.delete()
+            liked = False
+            message = "Like rimosso"
+        else:
+            # Aggiungi il like
+            Like.objects.create(user=request.user, post=post)
+            liked = True
+            message = "Like aggiunto"
+
+            # Verifica i badge per l'autore del post dopo aver ricevuto un like
+            BadgeService.check_all_badges(post.author)
+
+        # Conta i like totali
+        total_likes = post.likes.count()
+
+        return Response({
+            "liked": liked,
+            "total_likes": total_likes,
+            "message": message
+        }, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        """Aggiungi un commento a un post"""
+        post = self.get_object()
+
+        # Verifica se l'utente può vedere questo post
+        if not post.group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Non hai il permesso di commentare questo post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        content = request.data.get('content', '').strip()
+        if not content:
+            return Response(
+                {"detail": "Il contenuto del commento è obbligatorio."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Crea il commento
+        comment = Comment.objects.create(
+            post=post,
+            author=request.user,
+            content=content
+        )
+
+        # Verifica badge per l'autore del commento
+        BadgeService.check_all_badges(request.user)
+
+        serializer = CommentSerializer(comment, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        """Ottieni tutti i commenti di un post"""
+        post = self.get_object()
+
+        # Verifica permessi
+        if not post.group.memberships.filter(user=request.user).exists():
+            return Response(
+                {"detail": "Non hai il permesso di vedere i commenti di questo post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        comments = Comment.objects.filter(post=post).order_by('created_at')
+        serializer = CommentSerializer(comments, many=True, context={'request': request})
+        return Response(serializer.data)
 
     def get_queryset(self):
         """Filtra i post in base all'utente e ai suoi gruppi"""
