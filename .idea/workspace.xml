@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="Implementazione della creazione dei post con geolocalizzazione">
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/triptales/badge_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/triptales/badge_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_triptales/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_triptales/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/pyvenv.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/venv/pyvenv.cfg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +39,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/zaccaq/backend-triptales.git&quot;,
-    &quot;accountId&quot;: &quot;0356ba6c-67e0-4fa1-b128-d202d867aa1a&quot;
+    &quot;accountId&quot;: &quot;18495dec-5a1d-4ee9-9840-5eda8d23c7cc&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -58,6 +61,7 @@
     &quot;com.codeium.enabled&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/albertocosta/Desktop/Project_Work_Quinte/5BII/5_CacheMeIfYouCan/backend-triptales&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -72,6 +76,11 @@
     ]
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="backend-triptales" type="Python.DjangoServer" factoryName="Django server">
       <module name="backend-triptales" />
@@ -83,7 +92,6 @@
         <env name="DJANGO_SETTINGS_MODULE" value="backend_triptales.settings" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (AI)" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -103,11 +111,12 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-PY-251.23774.444" />
-        <option value="bundled-python-sdk-890ed5b35930-d9c5bdb153f4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.23774.444" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.19416.19" />
+        <option value="bundled-python-sdk-337b0a7a993a-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.19416.19" />
       </set>
     </attachedChunks>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e012e504-6afa-483c-a993-31fc078a1b5f" name="Changes" comment="" />
@@ -130,6 +139,8 @@
       <workItem from="1747403616296" duration="4300000" />
       <workItem from="1747812303921" duration="2782000" />
       <workItem from="1747896711717" duration="10272000" />
+      <workItem from="1748416539526" duration="237000" />
+      <workItem from="1748416792255" duration="275000" />
     </task>
     <task id="LOCAL-00001" summary="Start backend-triptales">
       <option name="closed" value="true" />
