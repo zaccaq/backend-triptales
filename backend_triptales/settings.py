@@ -11,7 +11,28 @@ SECRET_KEY = 'django-insecure-your-secret-key-here'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'costaalberto.duckdns.org',  # AGGIUNTO
+    '0.0.0.0',
+    '*'  # Solo per sviluppo - rimuovi in produzione
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://costaalberto.duckdns.org:8005",  # AGGIUNTO
+    "http://10.0.2.2:8005",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Solo per sviluppo
+
+# Per le connessioni WebSocket
+ALLOWED_WEBSOCKET_ORIGINS = [
+    "http://costaalberto.duckdns.org:8005",
+    "ws://costaalberto.duckdns.org:8005",
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -145,9 +166,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
-
-# CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # In production, specify the domains
 ASGI_APPLICATION = 'backend_triptales.asgi.application'
 CHANNEL_LAYERS = {
     'default': {
